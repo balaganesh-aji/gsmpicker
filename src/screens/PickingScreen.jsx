@@ -40,7 +40,9 @@ function ItemCard({ item, cartEntry, onAdd, onRemove, onException, cardRef }) {
                 : 'bg-white border-[#ededed]'
 
   return (
-    <div ref={cardRef} className={`rounded-xl border transition-all duration-200 ${bgClass}`}>
+    <div ref={cardRef}
+      onClick={() => !isDone && !isOOS && !isSub && qty < item.qty && onAdd(item)}
+      className={`rounded-xl border transition-all duration-200 ${bgClass} ${!isDone && !isOOS && !isSub ? 'cursor-pointer active:scale-[0.98]' : ''}`}>
       <div className="p-4">
         {/* Top row: status icon + name + location */}
         <div className="flex items-start gap-3 mb-3">
@@ -87,33 +89,24 @@ function ItemCard({ item, cartEntry, onAdd, onRemove, onException, cardRef }) {
           <div className="flex items-center gap-2">
             {/* Exception button */}
             {!isOOS && !isSub && (
-              <button onClick={() => onException(item)}
+              <button onClick={(e) => { e.stopPropagation(); onException(item) }}
                 className="h-8 px-2.5 rounded-lg text-[11px] font-semibold border border-gray-200 text-gray-400 hover:border-gray-300 hover:text-gray-600 transition-colors flex-shrink-0">
                 ···
               </button>
             )}
 
-            {/* ±  stepper — hidden when OOS/sub */}
-            {!isOOS && !isSub && (
-              <div className="flex items-center gap-1">
-                {qty > 0 && (
-                  <button onClick={() => onRemove(item.id)}
-                    className="w-8 h-8 rounded-lg flex items-center justify-center border border-gray-200 text-gray-500 hover:bg-gray-100 transition-colors active:scale-90">
-                    <Minus size={13} />
-                  </button>
-                )}
-                <button onClick={() => onAdd(item)}
-                  disabled={qty >= item.qty}
-                  className="w-8 h-8 rounded-lg flex items-center justify-center text-white transition-all active:scale-90 disabled:opacity-40"
-                  style={{ backgroundColor: isDone ? '#10b981' : '#ee2c2c' }}>
-                  <Plus size={14} />
-                </button>
-              </div>
+            {/* − stepper — shown when qty > 0 and not OOS/sub */}
+            {!isOOS && !isSub && qty > 0 && (
+              <button
+                onClick={(e) => { e.stopPropagation(); onRemove(item.id) }}
+                className="w-8 h-8 rounded-lg flex items-center justify-center border border-gray-200 text-gray-500 hover:bg-gray-100 transition-colors active:scale-90">
+                <Minus size={13} />
+              </button>
             )}
 
             {/* Remove exception tag */}
             {(isOOS || isSub) && (
-              <button onClick={() => onRemove(item.id)}
+              <button onClick={(e) => { e.stopPropagation(); onRemove(item.id) }}
                 className="w-8 h-8 rounded-lg border border-gray-200 flex items-center justify-center text-gray-400 hover:text-red-500 hover:border-red-200 transition-colors">
                 <Trash2 size={13} />
               </button>
