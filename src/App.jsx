@@ -1,5 +1,7 @@
 import { useState } from 'react'
+import { useRegisterSW } from 'virtual:pwa-register/react'
 import { AuthProvider, useAuth } from './context/AuthContext'
+import InstallPrompt from './components/InstallPrompt'
 import LoginScreen    from './screens/LoginScreen'
 import OrdersScreen   from './screens/OrdersScreen'
 import PickingScreen  from './screens/PickingScreen'
@@ -102,10 +104,28 @@ function AppShell() {
   )
 }
 
+function UpdateToast() {
+  const { needRefresh: [needRefresh], updateServiceWorker } = useRegisterSW()
+  if (!needRefresh) return null
+  return (
+    <div className="fixed top-4 left-3 right-3 z-50 rounded-2xl px-4 py-3 flex items-center justify-between shadow-xl"
+      style={{ backgroundColor: '#1b1a20', border: '1px solid rgba(255,255,255,0.1)' }}>
+      <p className="text-sm text-white font-medium">New version available</p>
+      <button onClick={() => updateServiceWorker(true)}
+        className="text-xs font-bold px-3 py-1.5 rounded-lg"
+        style={{ backgroundColor: '#ee2c2c', color: 'white' }}>
+        Update
+      </button>
+    </div>
+  )
+}
+
 export default function App() {
   return (
     <AuthProvider>
       <AppShell />
+      <InstallPrompt />
+      <UpdateToast />
     </AuthProvider>
   )
 }
